@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         brightness: Brightness.light,
       ),
-      home: MenuTrainingsPage(),
+      home: const MenuTrainingsPage(),
     );
   }
 }

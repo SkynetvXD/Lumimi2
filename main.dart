@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'services/learner_service.dart';
 import 'app.dart';
-import 'screens/welcome/welcome_screen.dart';
+import 'screens/home/home_screen.dart';
 
 void main() async {
   // Garante que os widgets Flutter estejam inicializados
@@ -15,14 +15,12 @@ void main() async {
     await LearnerService.updateCurrentLearnerLastAccess();
   }
   
-  // Inicia o app com a tela apropriada
-  runApp(MyAppWrapper(hasLearners: hasLearners));
+  // Inicia o app sempre com a tela inicial
+  runApp(MyAppWrapper());
 }
 
 class MyAppWrapper extends StatelessWidget {
-  final bool hasLearners;
-  
-  const MyAppWrapper({super.key, required this.hasLearners});
+  const MyAppWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +30,7 @@ class MyAppWrapper extends StatelessWidget {
         primarySwatch: Colors.blue,
         brightness: Brightness.light,
       ),
-      home: hasLearners ? const MyApp() : const WelcomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

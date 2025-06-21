@@ -6,10 +6,11 @@ import '../../services/progress_service.dart';
 import '../../utils/message_helper.dart';
 import '../colors_training/colors_training_page.dart';
 import '../common_widgets/gradient_background.dart';
-import '../learner/learners_management_screen.dart';  // Importe a tela de gerenciamento
+import '../learner/learners_management_screen.dart';
 import '../progress/progress_history_page.dart';
 import '../quantity_training/quantity_training_page.dart';
 import '../shapes_training/shapes_training_page.dart';
+import '/screens/home/home_screen.dart';
 import 'widgets/training_card.dart';
 
 class MenuTrainingsPage extends StatefulWidget {
@@ -118,6 +119,36 @@ class _MenuTrainingsPageState extends State<MenuTrainingsPage> {
       MaterialPageRoute(builder: (context) => const LearnersManagementScreen()),
     ).then((_) => _loadProgressAndLearner());
   }
+
+  // Função para mostrar diálogo de logout
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sair do App'),
+        content: const Text('Deseja sair e voltar à tela inicial?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('CANCELAR'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (route) => false,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('SAIR'),
+          ),
+        ],
+      ),
+    );
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -132,97 +163,135 @@ class _MenuTrainingsPageState extends State<MenuTrainingsPage> {
                 child: Column(
                   children: [
                     // Cabeçalho
-                    Padding(
-                      padding: const EdgeInsets.all(20),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Row(
-                            children: [
-                              Icon(
-                                Icons.school,
+                          // Botão de sair
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withAlpha(51),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              onPressed: _showLogoutDialog,
+                              icon: const Icon(
+                                Icons.logout,
                                 color: Colors.white,
-                                size: 40,
+                                size: 24,
                               ),
-                              SizedBox(width: 10),
-                              Text(
-                                "Lumimi", // Nome do app alterado para Lumimi
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
+                              tooltip: 'Sair',
+                            ),
                           ),
                           
-                          // Barra de estrelas
-                          Row(
+                          const Spacer(),
+                          
+                          // Logo e nome do app (centralizado)
+                          Column(
                             children: [
-                              // Informações do aprendiz atual (clicável para mudar)
-                              GestureDetector(
-                                onTap: _navigateToLearnersManagement,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.school,
+                                    color: Colors.white,
+                                    size: 32,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "Lumimi",
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              // Informações do aprendiz atual
+                              if (_currentLearner != null)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withAlpha(76),
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor: Colors.white.withAlpha(150),
-                                        radius: 15,
+                                        backgroundColor: Colors.white,
+                                        radius: 12,
                                         child: Text(
-                                          _currentLearner?.name.substring(0, 1).toUpperCase() ?? 'A',
+                                          _currentLearner!.name.substring(0, 1).toUpperCase(),
                                           style: const TextStyle(
-                                            fontSize: 14,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.indigo,
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 5),
+                                      const SizedBox(width: 6),
                                       Text(
-                                        _currentLearner?.name ?? 'Aprendiz',
+                                        _currentLearner!.name,
                                         style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.white,
                                         ),
-                                      ),
-                                      const SizedBox(width: 5),
-                                      const Icon(
-                                        Icons.switch_account,  // Ícone que existe e é apropriado
-                                        color: Colors.white,
-                                        size: 18,
                                       ),
                                     ],
                                   ),
                                 ),
+                            ],
+                          ),
+                          
+                          const Spacer(),
+                          
+                          // Menu de opções e estrelas
+                          Column(
+                            children: [
+                              // Botão de gerenciar aprendizes
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withAlpha(51),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: IconButton(
+                                  onPressed: _navigateToLearnersManagement,
+                                  icon: const Icon(
+                                    Icons.switch_account,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  tooltip: 'Trocar paciente',
+                                ),
                               ),
                               
-                              const SizedBox(width: 8),
+                              const SizedBox(height: 8),
                               
                               // Contador de estrelas
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withAlpha(76),
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     const Icon(
                                       Icons.star,
                                       color: Colors.amber,
-                                      size: 24,
+                                      size: 18,
                                     ),
-                                    const SizedBox(width: 5),
+                                    const SizedBox(width: 4),
                                     Text(
                                       "$_totalStars",
                                       style: const TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
